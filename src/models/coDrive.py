@@ -160,8 +160,7 @@ class Codrive(Gripper, EasyResource):
         raise NotImplementedError()
 
     async def is_moving(self) -> bool:
-        self.logger.error("`is_moving` is not implemented")
-        raise NotImplementedError()
+        return False
 
     async def get_kinematics(
         self,
@@ -170,8 +169,7 @@ class Codrive(Gripper, EasyResource):
         timeout: Optional[float] = None,
         **kwargs
     ) -> Tuple[KinematicsFileFormat.ValueType, bytes]:
-        self.logger.error("`get_kinematics` is not implemented")
-        raise NotImplementedError()
+        return KinematicsFileFormat.KINEMATICS_FILE_FORMAT_UNSPECIFIED, b""
 
     async def do_command(
         self,
@@ -192,6 +190,5 @@ class Codrive(Gripper, EasyResource):
     async def get_geometries(
         self, *, extra: Optional[Dict[str, Any]] = None, timeout: Optional[float] = None
     ) -> List[Geometry]:
-        self.logger.error("`get_geometries` is not implemented")
-        raise NotImplementedError()
+        return []
 
