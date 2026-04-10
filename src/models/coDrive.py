@@ -19,7 +19,7 @@ class Codrive(Gripper, EasyResource):
     # To enable debug-level logging, either run viam-server with the --debug option,
     # or configure your resource/machine to display debug logs.
     MODEL: ClassVar[Model] = Model(
-        ModelFamily("brad-grigsby", "soft-robotics"), "coDrive"
+        ModelFamily("biotinker", "soft-robotics"), "coDrive"
     )
 
     @classmethod
@@ -109,15 +109,12 @@ class Codrive(Gripper, EasyResource):
         # Turn on generator pin
         await com_pin.set(high=True)
 
-        # Make sure grab_pin is set to low
-        await grab_pin.set(high=False)
+        await grab_pin.set(high=True)
 
         # Set open_pin to high
         await open_pin.set(high=True)
         # Wait for a short duration to ensure the vacuum is released
-        await asyncio.sleep(0.5)
-        # Set open_pin to low
-        await open_pin.set(high=False)
+        await asyncio.sleep(2)
 
         # Turn off generator pin
         await com_pin.set(high=False)
@@ -132,16 +129,14 @@ class Codrive(Gripper, EasyResource):
         grab_pin = await self.board.gpio_pin_by_name(self.grab_pin_name)
         open_pin = await self.board.gpio_pin_by_name(self.open_pin_name)
         com_pin = await self.board.gpio_pin_by_name(self.com_pin_name)
+        await open_pin.set(high=False)
+        await grab_pin.set(high=False)
 
         # Turn on generator pin
         await com_pin.set(high=True)
 
-        # Make sure open_pin is set to low
-        await open_pin.set(high=False)
-
-        # Set grab_pin to high
-        await grab_pin.set(high=True)
-
+        await asyncio.sleep(3)
+        await com_pin.set(high=False)
         return True
 
     async def is_holding_something(
@@ -185,8 +180,14 @@ class Codrive(Gripper, EasyResource):
         timeout: Optional[float] = None,
         **kwargs
     ) -> Mapping[str, ValueTypes]:
-        self.logger.error("`do_command` is not implemented")
-        raise NotImplementedError()
+        grab_pin = await self.board.gpio_pin_by_name(self.grab_pin_name)
+        open_pin = await self.board.gpio_pin_by_name(self.open_pin_name)
+        com_pin = await self.board.gpio_pin_by_name(self.com_pin_name)
+        await open_pin.set(high=True)
+        await grab_pin.set(high=True)
+        await asyncio.sleep(1)
+        await open_pin.set(high=False)
+        await grab_pin.set(high=False)
 
     async def get_geometries(
         self, *, extra: Optional[Dict[str, Any]] = None, timeout: Optional[float] = None
